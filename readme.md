@@ -22,15 +22,29 @@
 
 
 ```sql
+
 SELECT
- strftime('%Y', a.timestamp_start) AS YEAR
+ strftime('%Y', a.timestamp_start) AS YEAR,
  b.name AS COUNTRY,
- sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000)) AS ODO
+ sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000) AS ODO
+FROM tracklines a, countries b
+WHERE ST_Intersects(a.geom, b.geometry);
+
+
+SELECT
+ strftime('%Y', a.timestamp_start) AS YEAR,
+ b.name AS COUNTRY,
+ sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000,2)) AS ODO
 FROM tracklines a, countries b
 WHERE ST_Intersects(a.geom, b.geometry)
-GROUP BY YEAR
-ORDER BY Odo DESC;
+GROUP BY YEAR, COUNTRY;
 
+SELECT
+ b.name AS COUNTRY,
+ sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000,2)) AS ODO
+FROM tracklines a, countries b
+WHERE ST_Intersects(a.geom, b.geometry)
+GROUP BY COUNTRY;
 
 SELECT b.name, sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000))
 FROM tracklines a, states_provinces b
