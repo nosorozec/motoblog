@@ -7,6 +7,7 @@
  * https://en.wikipedia.org/wiki/SQL_syntax
  * https://en.wikipedia.org/wiki/Spatial_database
  * https://en.wikipedia.org/wiki/Spatial_query
+ * https://www.slideshare.net/shawty_ds/what-is-spatial-sql
 1. main queries
  * Intersects(geometry, geometry) : boolean
  * Length(geometry) : number
