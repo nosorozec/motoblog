@@ -22,10 +22,14 @@
 
 
 ```sql
-SELECT b.name, sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000))
+SELECT
+ strftime('%Y', a.timestamp_start) AS YEAR
+ b.name AS COUNTRY,
+ sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000)) AS ODO
 FROM tracklines a, countries b
 WHERE ST_Intersects(a.geom, b.geometry)
-GROUP BY b.name;
+GROUP BY YEAR
+ORDER BY Odo DESC;
 
 
 SELECT b.name, sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000))
