@@ -13,7 +13,7 @@ DBNAME=ludw-moto.sqlite
 #create new db with natural earth and my gpxs files + required tables to enable gpx2spatialite
 xzcat natural_earth.sqlite.xz > $DBNAME
 curl https://raw.githubusercontent.com/ptrv/gpx2spatialite/master/gpx2spatialite/data/sql/create_db.sql | spatialite $DBNAME
-for i in ludw_gpx/*gpx
+for i in gpx/*gpx
 do
   echo y | gpx2spatialite -s -d $DBNAME --user ktm $i
 done
