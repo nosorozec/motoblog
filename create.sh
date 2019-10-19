@@ -7,7 +7,7 @@ pip install gpx2spatialite
 
 DBNAME=ludw-moto.sqlite
 [[ -e $DBNAME ]] && rm $DBNAME
-[[ -e natural_earth.sqlite.xz ]] || (curl -LO https://www.gaia-gis.it/gaia-sins/gui2-samples/natural_earth.sqlite && xz natural_earth.sqlite)
+[[ -e natural_earth.sqlite.xz ]] || (rm -f ./natural_earth*; curl -LO https://www.gaia-gis.it/gaia-sins/gui2-samples/natural_earth.sqlite && xz natural_earth.sqlite)
 
 
 #create new db with natural earth and my gpxs files + required tables to enable gpx2spatialite
