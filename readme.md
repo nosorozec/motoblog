@@ -20,41 +20,40 @@
  * Contains(geometry, geometry) : boolean
  * Area(geometry) : number
  * Centroid(geometry) : geometry
-
+1. create docker image
+```
+ docker build -t ludw/spatialite:devel .
+```
 
 ```sql
-
+--w jakich województwach byłem w Polsce i ile w nich zrobiłem kilometrów
 SELECT
- strftime('%Y', a.timestamp_start) AS YEAR,
- b.name AS COUNTRY,
- sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000) AS ODO
-FROM tracklines a, countries b
-WHERE ST_Intersects(a.geom, b.geometry);
-
-
-SELECT
- strftime('%Y', a.timestamp_start) AS YEAR,
- b.name AS COUNTRY,
- sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000,2)) AS ODO
-FROM tracklines a, countries b
-WHERE ST_Intersects(a.geom, b.geometry)
-GROUP BY YEAR, COUNTRY;
-
-SELECT
- b.name AS COUNTRY,
- sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000,2)) AS ODO
-FROM tracklines a, countries b
-WHERE ST_Intersects(a.geom, b.geometry)
-GROUP BY COUNTRY;
-
-SELECT b.name, sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000))
+ b.gn_name AS WOJEW,
+ sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000)) AS ODO
 FROM tracklines a, states_provinces b
-WHERE ST_Intersects(a.geom, b.geometry)
-GROUP BY b.name;
+WHERE b.admin='Poland' AND ST_Intersects(a.geom, b.geometry)
+GROUP BY WOJEW
+ORDER BY ODO DESC;
 
+-- ile kilometrów zrobiłem w jakich krajach?
+SELECT
+ b.name AS COUNTRY,
+ sum(round(ST_LENGTH(ST_Intersection(a.geom, b.geometry),1)/1000)) AS ODO
+FROM tracklines a, countries b
+WHERE ST_Intersects(a.geom, b.geometry)
+GROUP BY COUNTRY
+ORDER BY ODO DESC;
+
+-- ile kilometrów zrobiłem w jakich latach?
+SELECT
+ strftime('%Y', timestamp_start) AS YEAR,
+ SUM(round(length_m/1000,2)) AS LENGTH,
+ SUM(round(ST_LENGTH(geom,1)/1000,2)) AS Calculated
+FROM tracklines
+GROUP BY YEAR;
 ```
 
 #Baza wyjazdów
 
-1. każdy ślad: trk/trkseg/trkpt
+1. każdy ślad: trk/trkseg/trkpt (obecne rozwiązanie `gpx2spatialite` nie obsługuje plików GPX bez daty - mam takie w 2018 roku z powodów błędów w Garmin Basecamp)
 1. jakiś pomysł na logiczne wiązanie wyjazdów?
