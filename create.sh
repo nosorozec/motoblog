@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 DBNAME=ludw-moto.sqlite
 [[ -e $DBNAME ]] && rm -f $DBNAME
 [[ -e natural_earth.sqlite.xz ]] || (rm -f ./natural_earth*; curl -LO https://www.gaia-gis.it/gaia-sins/gui2-samples/natural_earth.sqlite && xz natural_earth.sqlite)
@@ -9,5 +11,6 @@ xzcat natural_earth.sqlite.xz > $DBNAME
 curl https://raw.githubusercontent.com/ptrv/gpx2spatialite/master/gpx2spatialite/data/sql/create_db.sql | spatialite $DBNAME
 for i in gpx/*gpx
 do
+  echo "procesing file $i"
   echo y | gpx2spatialite -s -d $DBNAME --user ktm $i
 done
