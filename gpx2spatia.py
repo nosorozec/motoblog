@@ -27,16 +27,16 @@ def gpx2sql(fname):
         for trkseg in trk.findall('gpx:trkseg', ns):
             for trkpt in trkseg.findall('gpx:trkpt', ns):
                 sql_track_pts += trkpt.get('lon') + " " + trkpt.get('lat')+","
-        trk_stop = trkpt.find('gpx:time', ns).text #Ostatni punkt w tracku - pobieram jego czas
+        trk_stop = trkpt.find('gpx:time', ns).text #Ostatni punkt w tracku - pobieram jego czas (dużo szybciej)
         #mamy już wszystkie dane do utworzenia SQL INSERTa
         sql_track = "insert into tracks (track_uid, name, description, start, stop, hash, geom) values (NULL, '"
         sql_track += trk_name + "', '" + trk_desc + "', '" + trk_start + "', '" + trk_stop  + "', '" + trk_hash
         sql_track += "', GeomFromText('LINESTRING(" + sql_track_pts[:-1] + ")\', 4326));"
-        print(sql_track)
+        return(sql_track)
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("gpxfiles", nargs="+", help="list of gpx files to parse")
 args = parser.parse_args()
 for gpxfile in args.gpxfiles:
-    gpx2sql(gpxfile)
+    print(gpx2sql(gpxfile))
