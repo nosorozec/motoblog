@@ -25,6 +25,53 @@
  docker build -t ludw/spatialite:devel .
 ```
 
+https://www.marksmath.org/classes/Spring2016NumericalAnalysis/demos/ImportGPX.html
+https://docs.python.org/3/library/xml.etree.elementtree.html
+
+
+gpx - root node
+  trk - child node
+    name - child node
+
+
+gpx = ET.parse('sample.gpx').getroot()
+for trk in gpx.findall('trk'):
+  print("Name = {0}, descr={1}".format(trk.find('name').text, trk.find('desc').text))
+  for trkseg in trk.findall('trkseg'):
+    for trkpt in trkseg.findall('trkpt'):
+      print(trkpt.get('lat'))
+
+
+import xml.etree.ElementTree as ET
+gpx = ET.parse('gpx/20191026-Zamosc.gpx').getroot()
+for trk in gpx.findall('{http://www.topografix.com/GPX/1/1}trk'):
+  print("Name = {0}, descr={1}".format(trk.find('{http://www.topografix.com/GPX/1/1}name').text, trk.find('{http://www.topografix.com/GPX/1/1}desc').text))
+  for trkseg in trk.findall('{http://www.topografix.com/GPX/1/1}trkseg'):
+    sql="LINESTRING("
+    for trkpt in trkseg.findall('{http://www.topografix.com/GPX/1/1}trkpt'):
+      sql += trkpt.get('lat') + " " + trkpt.get('lon')+","
+    sql = sql[:-1]+")"
+
+lxml -> create SQL from GPX. Można by użyć do tego gpxpy ale my nie idziemy na łatwiznę. Sami przeorami te XMLe :)
+
+
+https://gis.stackexchange.com/questions/228966/how-to-properly-get-coordinates-from-gpx-file-in-python
+from lxml import etree
+NSMAP = {"gpx": "http://www.topografix.com/GPX/1/1"}
+tree = etree.parse("St_Louis_Zoo_sample.gpx")
+for elem in tree.findall("gpx:wpt", namespaces=NSMAP):
+     print elem.attrib['lon'], elem.attrib['lat']
+
+from lxml import etree
+NSMAP = {"gpx": "http://www.topografix.com/GPX/1/1"}
+gpxfile = etree.parse("/motoblog/gpx/20191026-Zamosc.gpx")
+
+
+<trk> - root node
+ <name> - element
+
+
+
 ```sql
 --w jakich województwach byłem w Polsce i ile w nich zrobiłem kilometrów
 SELECT
