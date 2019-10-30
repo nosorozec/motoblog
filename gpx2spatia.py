@@ -1,11 +1,37 @@
 import hashlib
 import xml.etree.ElementTree as ET
 import argparse
+import sqlite3
 
 # print("Name = {0}, descr={1}".format(trk.find('{http://www.topografix.com/GPX/1/1}name').text, trk.find('{http://www.topografix.com/GPX/1/1}desc').text))
 #gpx -> trk ->
 
-def gpx2sql(fname):
+rm /ludwik_spatia.db &&  time python3 gpx2spatia.py gpx/*gpx
+#echo "select round(sum(st_length(geom,1))/1000,2) from tracks;" | spatialite -silent /ludwik_spatia.db
+
+
+
+spatia_schema = """
+    CREATE TABLE tracks (
+    track_uid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    start TEXT NOT NULL,
+    stop TEXT NOT NULL,
+    name TEXT,
+    description TEXT,
+    hash TEXT NOT NULL UNIQUE
+    );
+
+    SELECT AddGeometryColumn('tracks', 'geom', 4326, 'LINESTRING', 'XY', 1);
+    SELECT CreateSpatialIndex('tracks', 'geom');
+"""
+
+def db_inserter(conn, c, sql):
+    c.execute(sql)
+    conn.commit()
+
+
+
+def gpx2sql(conn, c, fname):
     gpx = ET.parse(fname).getroot()
     ns = {'gpx':'http://www.topografix.com/GPX/1/1'}
     #w pętli teorzone są dwa SQL insert - tracks oraz points
@@ -14,6 +40,7 @@ def gpx2sql(fname):
             trk_name=trk.find('gpx:name',ns).text
         else:
             trk_name = ''
+        print("procesing track {0}".format(trk_name))
 
         if trk.find('gpx:desc',ns) is not None:
             trk_desc=trk.find('gpx:desc',ns).text
@@ -32,11 +59,22 @@ def gpx2sql(fname):
         sql_track = "insert into tracks (track_uid, name, description, start, stop, hash, geom) values (NULL, '"
         sql_track += trk_name + "', '" + trk_desc + "', '" + trk_start + "', '" + trk_stop  + "', '" + trk_hash
         sql_track += "', GeomFromText('LINESTRING(" + sql_track_pts[:-1] + ")\', 4326));"
-        return(sql_track)
+        db_inserter(conn, c, sql_track)
 
-
+#parsing the command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("gpxfiles", nargs="+", help="list of gpx files to parse")
 args = parser.parse_args()
+
+#connecting fo database
+#TODO: delete file if exist
+conn = sqlite3.connect("/ludwik_spatia.db")
+conn.enable_load_extension(True)
+conn.execute('SELECT load_extension("mod_spatialite.so")')
+conn.execute('SELECT InitSpatialMetaData(1);')
+c = conn.cursor()
+c.executescript(spatia_schema)
+
+
 for gpxfile in args.gpxfiles:
-    print(gpx2sql(gpxfile))
+    gpx2sql(conn, c, gpxfile)
