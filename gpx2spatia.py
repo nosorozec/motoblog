@@ -3,12 +3,14 @@ import xml.etree.ElementTree as ET
 import argparse
 import sqlite3
 
-# print("Name = {0}, descr={1}".format(trk.find('{http://www.topografix.com/GPX/1/1}name').text, trk.find('{http://www.topografix.com/GPX/1/1}desc').text))
+
+#print("Name = {0}, descr={1}".format(trk.find('{http://www.topografix.com/GPX/1/1}name').text, trk.find('{http://www.topografix.com/GPX/1/1}desc').text))
 #gpx -> trk ->
 
-rm /ludwik_spatia.db &&  time python3 gpx2spatia.py gpx/*gpx
+#export PYTHONIOENCODING=utf8
+#rm /ludwik_spatia.db &&  time python3 gpx2spatia.py gpx/*gpx
 #echo "select round(sum(st_length(geom,1))/1000,2) from tracks;" | spatialite -silent /ludwik_spatia.db
-
+#132984.06
 
 
 spatia_schema = """
@@ -20,15 +22,17 @@ spatia_schema = """
     description TEXT,
     hash TEXT NOT NULL UNIQUE
     );
-
     SELECT AddGeometryColumn('tracks', 'geom', 4326, 'LINESTRING', 'XY', 1);
     SELECT CreateSpatialIndex('tracks', 'geom');
 """
 
 def db_inserter(conn, c, sql):
-    c.execute(sql)
-    conn.commit()
-
+    try:
+        c.execute(sql)
+    except Exception as e:
+        print("Exception in SQL query: %s" % e)
+    finally:
+        conn.commit()
 
 
 def gpx2sql(conn, c, fname):
@@ -40,7 +44,7 @@ def gpx2sql(conn, c, fname):
             trk_name=trk.find('gpx:name',ns).text
         else:
             trk_name = ''
-        print("procesing track {0}".format(trk_name))
+        print("  track {0}".format(trk_name))
 
         if trk.find('gpx:desc',ns) is not None:
             trk_desc=trk.find('gpx:desc',ns).text
@@ -77,4 +81,5 @@ c.executescript(spatia_schema)
 
 
 for gpxfile in args.gpxfiles:
+    print("procesing file {0}".format(gpxfile))
     gpx2sql(conn, c, gpxfile)
