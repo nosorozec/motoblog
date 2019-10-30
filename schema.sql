@@ -1,8 +1,5 @@
 --Create DB schemas
--- bike -> file
-
-BEGIN TRANSACTION;
---
+-- bike -> file--
 --CREATE TABLE bikes (
 --  bike_uid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 --  bikename TEXT NOT NULL,
@@ -33,5 +30,3 @@ CREATE TABLE tracks (
 --https://www.gaia-gis.it/spatialite-3.0.0-BETA/spatialite-cookbook/html/new-geom.html
 SELECT AddGeometryColumn('tracks', 'geom', 4326, 'LINESTRING', 'XY', 1);
 SELECT CreateSpatialIndex('tracks', 'geom');
-
-COMMIT;
