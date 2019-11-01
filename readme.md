@@ -1,12 +1,12 @@
 # algorytm utworzenia blogu
-1 Basecamp
+1. Basecamp
   * wszystkie tracki importuję do Basecampa, obrabiam, komentuję, etc.
   * eksport to katalogu ```gpx```
-1 ```gpx2spatia.py```
+1. ```gpx2spatia.py```
   * pompujemy z plików GPX informację do bazy danych Spatialite
-1 ```spatia2geojson.py```
+1. ```spatia2geojson.py```
   * wyciągmy ze spatalite wszystkie informacje o naszych wyjazdach i tworzymy z nich pliki GeoJSON
-1 MAKO tempates
+1. MAKO tempates
   * tworzymy statyczną stronę WWW za pomocą templejtów
 
 
