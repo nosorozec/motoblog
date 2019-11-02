@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import hashlib
 import argparse
 import sqlite3
 import os
@@ -7,24 +8,14 @@ import os
 #print("Name = {0}, descr={1}".format(trk.find('{http://www.topografix.com/GPX/1/1}name').text, trk.find('{http://www.topografix.com/GPX/1/1}desc').text))
 #gpx -> trk ->
 
-#export PYTHONIOENCODING=utf8
-#rm /ludwik_spatia.db &&  time python3 gpx2spatia.py gpx/*gpx
-# cd /motoblog
-# PYTHONIOENCODING=utf8 python3 gpx2spatia.py --db ludw.db gpx/*gpx
-
-
-# echo "select name, hash, round(st_length(geom,1)/1000,2) from tracks; select round(sum(st_length(geom,1))/1000,2) from tracks;" | spatialite -silent ludwik.db
-#
-#132984.06
-
 spatia_schema = """
     CREATE TABLE tracks (
-    track_uid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    start TEXT NOT NULL,
-    stop TEXT NOT NULL,
-    name TEXT,
-    description TEXT,
-    hash INTEGER
+    track_uid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+    ,start TEXT NOT NULL
+    ,stop TEXT NOT NULL
+    ,name TEXT
+    ,description TEXT
+    ,hash TEXT
     );
     SELECT AddGeometryColumn('tracks', 'geom', 4326, 'LINESTRING', 'XY', 1);
     SELECT CreateSpatialIndex('tracks', 'geom');
@@ -58,8 +49,8 @@ def gpx2sql(conn, c, fname):
 
         trk_start = trk.find('gpx:trkseg/gpx:trkpt/gpx:time',ns).text #znajduję czas pierwszego punktu
         #trk_stop = trk.find('gpx:trkseg[last()]/gpx:trkpt[last()]/gpx:time', ns).text #znajduję czas ostatniego punktu SLOOW
-        #trk_hash = hashlib.sha224(ET.tostring(trk)).hexdigest()
-        trk_hash = abs(hash(ET.tostring(trk)))
+        trk_hash = hashlib.sha224(ET.tostring(trk)).hexdigest()
+        #trk_hash = abs(hash(ET.tostring(trk)))
         sql_track_pts = '' #konstruujemy listę punktów
         for trkseg in trk.findall('gpx:trkseg', ns):
             for trkpt in trkseg.findall('gpx:trkpt', ns):
