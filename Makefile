@@ -1,6 +1,9 @@
+spatiaDB = /usr/bin/spatialite
 dbName = ludw.db
 dockerImage = "ludw/spatialite:devel"
 httpdPort = 9999
+naturalEarth = $(wildcard natural_earth/*sql.gz)
+gpxFiles = $(wildcard gpx/*gpx)
 sqlCheckQuery = "select name, hash, round(st_length(geom,1)/1000,2) from tracks; select round(sum(st_length(geom,1))/1000,2) from tracks;"
 
 
@@ -14,9 +17,13 @@ sqlCheckQuery = "select name, hash, round(st_length(geom,1)/1000,2) from tracks;
 
 db: $(dbName)
 
-$(dbName): gpx2spatia.py $(wildcard /*gpx) clean
-	PYTHONIOENCODING=utf8 python3 gpx2spatia.py --db $(dbName) gpx/*gpx
-	echo $(sqlCheckQuery) | spatialite -silent $(dbName)
+$(dbName): gpx2spatia.py $(gpxFiles) $(naturalEarth)
+	rm $(dbName) | true
+	PYTHONIOENCODING=utf8 python3 gpx2spatia.py --db $(dbName) $(gpxFiles)
+	for i in $(naturalEarth); do \
+		zcat $$i | $(spatiaDB) $(dbName); \
+	done
+	echo $(sqlCheckQuery) | $(spatiaDB) -silent $(dbName)
 
 .PHONY: docker server clean db run
 
