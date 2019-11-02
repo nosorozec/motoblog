@@ -5,3 +5,6 @@ db: gpx2spatia.py
 
 server:
 	python3 -m http.server 9999
+
+docker:
+	docker build . -t ludw/spatialite:devel
