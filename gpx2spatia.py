@@ -9,6 +9,9 @@ import os
 
 #export PYTHONIOENCODING=utf8
 #rm /ludwik_spatia.db &&  time python3 gpx2spatia.py gpx/*gpx
+# cd /motoblog
+# PYTHONIOENCODING=utf8 python3 gpx2spatia.py --db ludw.db gpx/*gpx
+
 
 # echo "select name, hash, round(st_length(geom,1)/1000,2) from tracks; select round(sum(st_length(geom,1))/1000,2) from tracks;" | spatialite -silent ludwik.db
 #
@@ -27,6 +30,8 @@ spatia_schema = """
     SELECT CreateSpatialIndex('tracks', 'geom');
 """
 
+
+
 def db_inserter(conn, c, sql):
     try:
         c.execute(sql)
@@ -39,7 +44,6 @@ def db_inserter(conn, c, sql):
 def gpx2sql(conn, c, fname):
     gpx = ET.parse(fname).getroot()
     ns = {'gpx':'http://www.topografix.com/GPX/1/1'}
-    #w pętli teorzone są dwa SQL insert - tracks oraz points
     for trk in gpx.findall('gpx:trk', ns):
         if trk.find('gpx:name',ns) is not None:
             trk_name=trk.find('gpx:name',ns).text
@@ -73,16 +77,16 @@ parser.add_argument("gpxfiles", nargs="+", help="list of gpx files to parse")
 parser.add_argument("-d", "--db", required=True, help="spatialite database name")
 args = parser.parse_args()
 
-#If exist - delete it
+#If DB exist - delete it
 if os.path.exists(os.path.realpath(args.db)) is True:
     print("deleting existing database...")
     os.remove(os.path.realpath(args.db))
 
-#connecting fo database and insert schema
+#creating the databse
 conn = sqlite3.connect(os.path.realpath(args.db))
 conn.enable_load_extension(True)
 conn.execute('SELECT load_extension("mod_spatialite.so")')
-conn.execute('SELECT InitSpatialMetaData(1);')
+conn.execute('SELECT InitSpatialMetaData(1);') #
 c = conn.cursor()
 c.executescript(spatia_schema)
 
