@@ -1,6 +1,6 @@
 spatiaDB = /usr/bin/spatialite
 dbName = ludw.db
-dockerImage = "ludw/spatialite:devel"
+dockerImage = "ludw/spatialite:latest"
 httpdPort = 9999
 naturalEarth = $(wildcard natural_earth/*sql.gz)
 gpxFiles = $(wildcard gpx/*gpx)
