@@ -17,3 +17,5 @@ RUN apt-get update && \
   curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb && \
   dpkg -i ./hugo_0.59.1_Linux-64bit.deb && \
   rm ./hugo_0.59.1_Linux-64bit.deb
+
+EXPOSE 5423
