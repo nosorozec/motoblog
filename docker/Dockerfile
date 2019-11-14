@@ -5,9 +5,7 @@ MAINTAINER ludw <ludwikowski@gmail.com>
 RUN apt-get update && \
   apt-get install gnupg2
 
-RUN cat <<EOF > /etc/apt/sources.list.d/pgdg.list
-deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
-EOF
+RUN echo "http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"  > /etc/apt/sources.list.d/pgdg.list
 
 RUN curl -LO https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
   apt-key add ACCC4CF8.asc
