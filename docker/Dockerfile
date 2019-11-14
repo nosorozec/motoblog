@@ -27,4 +27,4 @@ RUN patch /etc/postgresql/12/main/pg_hba.conf -i /tmp/pg_hba.conf && \
 
 EXPOSE 5423
 
-ENTRYPOINT["service postgresql start && /bin/bash -l"]
+ENTRYPOINT ["service postgresql start && /bin/bash -l"]
