@@ -5,7 +5,7 @@ MAINTAINER ludw <ludwikowski@gmail.com>
 RUN apt-get update && \
   apt-get install gnupg2
 
-COPY psql/patch /tmp
+COPY patch /tmp
 
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"  > /etc/apt/sources.list.d/pgdg.list
 
@@ -19,5 +19,8 @@ RUN apt-get update && \
   curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb && \
   dpkg -i ./hugo_0.59.1_Linux-64bit.deb && \
   rm ./hugo_0.59.1_Linux-64bit.deb
+
+RUN patch /etc/postgresql/12/main/pg_hba.conf -i /tmp/pg_hba.conf && \
+    patch /etc/postgresql/12/main/postgresql.conf -i /tmp/postgresql.conf
 
 EXPOSE 5423
