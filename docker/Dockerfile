@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ludw/python3
 
 MAINTAINER ludw <ludwikowski@gmail.com>
 
