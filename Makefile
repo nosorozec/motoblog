@@ -27,6 +27,14 @@ $(dbName): gpx2spatia.py $(gpxFiles) $(naturalEarth)
 
 .PHONY: docker server clean db run
 
+psqldb:
+	sudo -u postgres dropdb $(dbName)
+	sudo -u postgres createdb $(dbName)
+	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis;"
+	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_raster;"
+	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_topology"
+
+
 run:
 	docker run --rm -it -p $(httpdPort):$(httpdPort) -v $(CURDIR):/motoblog $(dockerImage) bash -l
 
