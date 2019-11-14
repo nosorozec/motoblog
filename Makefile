@@ -1,5 +1,5 @@
 spatiaDB = /usr/bin/spatialite
-dbName = ludw.db
+dbName = ludwDB
 dockerImage = "ludw/spatialite:latest"
 httpdPort = 9999
 naturalEarth = $(wildcard natural_earth/*sql.gz)
