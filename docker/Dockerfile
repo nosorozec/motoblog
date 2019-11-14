@@ -5,7 +5,7 @@ MAINTAINER ludw <ludwikowski@gmail.com>
 RUN apt-get update && \
   apt-get install gnupg2
 
-COPY patch /tmp
+COPY patches /tmp
 
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"  > /etc/apt/sources.list.d/pgdg.list
 
