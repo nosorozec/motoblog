@@ -35,7 +35,10 @@ server:
 
 docker:
 	docker rmi $(dockerImage) | true
-	cd docker && docker build . -t $(dockerImage)
+	cd docker
+	#in docker catalog!!!
+	[[ ! -e ACCC4CF8.asc ]] && curl -LO https://www.postgresql.org/media/keys/ACCC4CF8.asc
+	docker build . -t $(dockerImage)
 
 clean:
 	# pipe to true to continue even if error
