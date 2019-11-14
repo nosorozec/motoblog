@@ -20,7 +20,11 @@ RUN apt-get update && \
   dpkg -i ./hugo_0.59.1_Linux-64bit.deb && \
   rm ./hugo_0.59.1_Linux-64bit.deb
 
+RUN pip3 install psycopg2-binary
+
 RUN patch /etc/postgresql/12/main/pg_hba.conf -i /tmp/pg_hba.conf && \
     patch /etc/postgresql/12/main/postgresql.conf -i /tmp/postgresql.conf
 
 EXPOSE 5423
+
+ENTRYPOINT["service postgresql start && /bin/bash -l"]
