@@ -28,7 +28,7 @@ $(dbName): gpx2spatia.py $(gpxFiles) $(naturalEarth)
 .PHONY: docker server clean db run
 
 psqldb:
-	sudo -u postgres dropdb $(dbName)
+	sudo -u postgres dropdb $(dbName) | true
 	sudo -u postgres createdb $(dbName)
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis;"
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_raster;"
