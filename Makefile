@@ -34,7 +34,6 @@ psqldb:
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_raster;"
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_topology"
 
-
 run:
 	docker run --rm -it -p $(httpdPort):$(httpdPort) -v $(CURDIR):/motoblog $(dockerImage) bash -l
 
