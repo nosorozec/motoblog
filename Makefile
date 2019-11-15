@@ -2,6 +2,7 @@ spatiaDB = /usr/bin/spatialite
 dbName = ludwDB
 dockerImage = "ludw/spatialite:latest"
 httpdPort = 9999
+psqlPort = 5432
 naturalEarth = $(wildcard natural_earth/*sql.gz)
 gpxFiles = $(wildcard gpx/*gpx)
 sqlCheckQuery = "select name, hash, round(st_length(geom,1)/1000,2) from tracks; select round(sum(st_length(geom,1))/1000,2) from tracks;"
@@ -25,7 +26,7 @@ $(dbName): gpx2spatia.py $(gpxFiles) $(naturalEarth)
 	done
 	echo $(sqlCheckQuery) | $(spatiaDB) -silent $(dbName)
 
-.PHONY: docker server clean db run
+.PHONY: docker server clean db run psqldb psql
 
 psqldb:
 	sudo -u postgres dropdb $(dbName) | true
@@ -34,8 +35,11 @@ psqldb:
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_raster;"
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_topology"
 
+psql:
+	sudo -u postgres psql -d $(dbName)
+
 run:
-	docker run --rm -it -p $(httpdPort):$(httpdPort) -v $(CURDIR):/motoblog $(dockerImage) bash -l
+	docker run --rm -it -p $(httpdPort):$(httpdPort) -p $(psqlPort):$(psqlPort)  -v $(CURDIR):/motoblog $(dockerImage) bash -l
 
 server:
 	python3 -m http.server 9999

@@ -6,6 +6,7 @@ RUN apt-get update && \
   apt-get install gnupg2
 
 COPY patches /tmp
+COPY services.sh /usr/local/bin/
 
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"  > /etc/apt/sources.list.d/pgdg.list
 
@@ -23,8 +24,9 @@ RUN apt-get update && \
 RUN pip3 install psycopg2-binary
 
 RUN patch /etc/postgresql/12/main/pg_hba.conf -i /tmp/pg_hba.conf && \
-    patch /etc/postgresql/12/main/postgresql.conf -i /tmp/postgresql.conf
+    patch /etc/postgresql/12/main/postgresql.conf -i /tmp/postgresql.conf && \
+    chmod 700 /usr/local/bin/services.sh
 
 EXPOSE 5423
 
-ENTRYPOINT ["service postgresql start && /bin/bash -l"]
+ENTRYPOINT ["/usr/local/bin/services.sh"]
