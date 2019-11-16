@@ -34,6 +34,8 @@ psqldb:
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis;"
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_raster;"
 	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_topology"
+	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION fuzzystrmatch"
+	sudo -u postgres psql -d $(dbName) -c "CREATE EXTENSION postgis_tiger_geocoder"
 
 psql:
 	sudo -u postgres psql -d $(dbName)
@@ -44,9 +46,14 @@ run:
 server:
 	python3 -m http.server 9999
 
+preps:
+	cd natural_earth && [ ! -e natural_earth_vector.sqlite.zip ] && curl -LO http://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip
+
+
 docker:
 	docker rmi $(dockerImage) | true
 	cd docker && docker build . -t $(dockerImage)
+
 
 clean:
 	# pipe to true to continue even if error

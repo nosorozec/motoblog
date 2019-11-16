@@ -16,17 +16,17 @@ RUN curl -LO https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
 
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-    apt-utils dialog librasterlite2-1 libspatialite-dbg libspatialite7 libsqlite3-mod-rasterlite2 libsqlite3-mod-spatialite spatialite-bin curl xz-utils pixz python3 python3-geojson make git ca-certificates vim postgresql-12 postgresql-12-postgis-3 postgresql-12-postgis-3-scripts && \
+    apt-utils dialog librasterlite2-1 libspatialite-dbg libspatialite7 libsqlite3-mod-rasterlite2 libsqlite3-mod-spatialite spatialite-bin curl xz-utils pixz python3 python3-geojson make git ca-certificates vim postgresql-11 postgresql-11-postgis-3 postgresql-11-postgis-3-scripts && \
   curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb && \
   dpkg -i ./hugo_0.59.1_Linux-64bit.deb && \
   rm ./hugo_0.59.1_Linux-64bit.deb
 
 RUN pip3 install psycopg2-binary
 
-RUN patch /etc/postgresql/12/main/pg_hba.conf -i /tmp/pg_hba.conf && \
-    patch /etc/postgresql/12/main/postgresql.conf -i /tmp/postgresql.conf && \
+RUN patch /etc/postgresql/11/main/pg_hba.conf -i /tmp/pg_hba.conf.11 && \
+    patch /etc/postgresql/11/main/postgresql.conf -i /tmp/postgresql.conf.11 && \
     chmod 700 /usr/local/bin/services.sh
 
-EXPOSE 5423
+EXPOSE 5432
 
 ENTRYPOINT ["/usr/local/bin/services.sh"]
